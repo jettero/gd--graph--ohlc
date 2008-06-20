@@ -22,12 +22,6 @@ use vars qw(@ISA $VERSION);
 ($VERSION) = '$Revision 0.01$' =~ /\s([\d.]+)/;
 @ISA = qw(GD::Graph::axestype);
 
-# sub initialise {
-#     my $self = shift;
-#        $self->SUPER::initialise();
-#        $self->set(correct_width => 1);
-# }
-
 sub draw_data_set {
     my $self = shift;
     my $ds   = shift;
@@ -35,31 +29,116 @@ sub draw_data_set {
     my @values = $self->{_data}->y_values($ds) or
         return $self->_set_error("Impossible illegal data set: $ds", $self->{_data}->error);
 
+    # Pick a colour
+    my $dsci = $self->set_clr($self->pick_data_clr($ds));
+
+    for (my $i = 0; $i < @values; $i++) {
+        my $value = $values[$i];
+        next unless ref($value) eq "ARRAY" and @$value==4;
+        my ($open, $high, $low, $close) = @$value;
+
+        for my $p ([0, 8], [1, 3], [2, 9], [3, 2]) {
+            my ($xp, $yp);
+            if (defined($self->{x_min_value}) && defined($self->{x_max_value})) {
+                ($xp, $yp) = $self->val_to_pixel($self->{_data}->get_x($i), $value->[$p->[0]], $ds);
+
+            } else {
+                ($xp, $yp) = $self->val_to_pixel($i+1, $value->[$p->[0]], $ds);
+            }
+
+            $self->marker($xp, $yp, $p->[1], $dsci );
+            $self->{_hotspots}->[$ds]->[$i] = ['rect', $self->marker_coordinates($xp, $yp)];
+        }
+    }
+
     return $ds;
 }
 
-sub draw_data {
+# Draw a marker
+sub marker_coordinates {
     my $self = shift;
-       $self->SUPER::draw_data() or return;
+    my ($xp, $yp) = @_;
 
-    return $self;
+    return (
+        $xp - $self->{marker_size},
+        $xp + $self->{marker_size},
+        $yp + $self->{marker_size},
+        $yp - $self->{marker_size},
+    );
 }
 
-sub draw_values {
+sub marker {
     my $self = shift;
+    my ($xp, $yp, $mtype, $mclr) = @_;
+    return unless defined $mclr;
 
-    return $self unless $self->{show_values};
-    my $has_args = @_;
+    my ($l, $r, $b, $t) = $self->marker_coordinates($xp, $yp);
 
-    my @numPoints = $self->{_data}->num_points();
-    my @datasets = $has_args ? @_ : 1 .. $self->{_data}->num_sets;
+    MARKER: {
 
-    for my $dsn ( @datasets ) {
-        my @values = $self->{_data}->y_values($dsn) or
-            return $self->_set_error("Impossible illegal data set: $dsn", $self->{_data}->error);
+        ($mtype == 1) && do 
+        { # Square, filled
+            $self->{graph}->filledRectangle($l, $t, $r, $b, $mclr);
+            last MARKER;
+        };
+        ($mtype == 2) && do 
+        { # Square, open
+            $self->{graph}->rectangle($l, $t, $r, $b, $mclr);
+            last MARKER;
+        };
+        ($mtype == 3) && do 
+        { # Cross, horizontal
+            $self->{graph}->line($l, $yp, $r, $yp, $mclr);
+            $self->{graph}->line($xp, $t, $xp, $b, $mclr);
+            last MARKER;
+        };
+        ($mtype == 4) && do 
+        { # Cross, diagonal
+            $self->{graph}->line($l, $b, $r, $t, $mclr);
+            $self->{graph}->line($l, $t, $r, $b, $mclr);
+            last MARKER;
+        };
+        ($mtype == 5) && do 
+        { # Diamond, filled
+            $self->{graph}->line($l, $yp, $xp, $t, $mclr);
+            $self->{graph}->line($xp, $t, $r, $yp, $mclr);
+            $self->{graph}->line($r, $yp, $xp, $b, $mclr);
+            $self->{graph}->line($xp, $b, $l, $yp, $mclr);
+            $self->{graph}->fillToBorder($xp, $yp, $mclr, $mclr);
+            last MARKER;
+        };
+        ($mtype == 6) && do 
+        { # Diamond, open
+            $self->{graph}->line($l, $yp, $xp, $t, $mclr);
+            $self->{graph}->line($xp, $t, $r, $yp, $mclr);
+            $self->{graph}->line($r, $yp, $xp, $b, $mclr);
+            $self->{graph}->line($xp, $b, $l, $yp, $mclr);
+            last MARKER;
+        };
+        ($mtype == 7) && do 
+        { # Circle, filled
+            $self->{graph}->arc($xp, $yp, 2 * $self->{marker_size},
+                         2 * $self->{marker_size}, 0, 360, $mclr);
+            $self->{graph}->fillToBorder($xp, $yp, $mclr, $mclr);
+            last MARKER;
+        };
+        ($mtype == 8) && do 
+        { # Circle, open
+            $self->{graph}->arc($xp, $yp, 2 * $self->{marker_size},
+                         2 * $self->{marker_size}, 0, 360, $mclr);
+            last MARKER;
+        };
+        ($mtype == 9) && do
+        { # Horizontal line
+            $self->{graph}->line($l, $yp, $r, $yp, $mclr);
+            last MARKER;
+        };
+        ($mtype == 10) && do
+        { # vertical line
+            $self->{graph}->line($xp, $t, $xp, $b, $mclr);
+            last MARKER;
+        };
     }
-
-    return $self
 }
 
 "Just another true value";
