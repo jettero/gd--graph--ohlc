@@ -54,22 +54,22 @@ sub draw_data_set {
             ($cx, $cy) = $self->val_to_pixel($i+1, $value->[3], $ds);
         }
 
-        $self->marker($ox,$oy, $cx,$cy, $lx,$ly, $hx,$hy, $dsci );
-        $self->{_hotspots}[$ds][$i] = ['rect', $self->marker_coordinates($ox,$oy, $cx,$cy, $lx,$ly, $hx,$hy)];
+        $self->ohlc_marker($ox,$oy, $cx,$cy, $lx,$ly, $hx,$hy, $dsci );
+        $self->{_hotspots}[$ds][$i] = ['rect', $self->ohlc_marker_coordinates($ox,$oy, $cx,$cy, $lx,$ly, $hx,$hy)];
     }
 
     return $ds;
 }
 
 # Draw a marker
-sub marker_coordinates {
+sub ohlc_marker_coordinates {
     my $self = shift;
     my ($ox,$oy, $cx,$cy, $lx,$ly, $hx,$hy) = @_;
 
     return ( $ox-2, $cx+2, $hy, $ly );
 }
 
-sub marker {
+sub ohlc_marker {
     my $self = shift;
     my ($ox,$oy, $cx,$cy, $lx,$ly, $hx,$hy, $mclr) = @_;
     return unless defined $mclr;
