@@ -22,6 +22,22 @@ use vars qw(@ISA $VERSION);
 ($VERSION) = '$Revision 0.01$' =~ /\s([\d.]+)/;
 @ISA = qw(GD::Graph::axestype);
 
+# sub initialise {
+#     my $self = shift;
+#        $self->SUPER::initialise();
+#        $self->set(correct_width => 1);
+# }
+
+sub draw_data_set {
+    my $self = shift;
+    my $ds   = shift;
+
+    my @values = $self->{_data}->y_values($ds) or
+        return $self->_set_error("Impossible illegal data set: $ds", $self->{_data}->error);
+
+    return $ds;
+}
+
 sub draw_data {
     my $self = shift;
        $self->SUPER::draw_data() or return;
