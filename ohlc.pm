@@ -32,23 +32,30 @@ sub draw_data_set {
     # Pick a colour
     my $dsci = $self->set_clr($self->pick_data_clr($ds));
 
+    my $GX;
+    my ($ox,$oy, $cx,$cy, $lx,$ly, $hx,$hy); # NOTE: all the x's are the same...
     for (my $i = 0; $i < @values; $i++) {
         my $value = $values[$i];
         next unless ref($value) eq "ARRAY" and @$value==4;
         my ($open, $high, $low, $close) = @$value;
 
-        for my $p ([0, 8], [1, 3], [2, 9], [3, 2]) {
-            my ($xp, $yp);
-            if (defined($self->{x_min_value}) && defined($self->{x_max_value})) {
-                ($xp, $yp) = $self->val_to_pixel($self->{_data}->get_x($i), $value->[$p->[0]], $ds);
+        if (defined($self->{x_min_value}) && defined($self->{x_max_value})) {
+            $GX = $self->{_data}->get_x($i);
 
-            } else {
-                ($xp, $yp) = $self->val_to_pixel($i+1, $value->[$p->[0]], $ds);
-            }
+            ($ox, $oy) = $self->val_to_pixel($GX, $value->[0], $ds);
+            ($hx, $hy) = $self->val_to_pixel($GX, $value->[1], $ds);
+            ($lx, $ly) = $self->val_to_pixel($GX, $value->[2], $ds);
+            ($cx, $cy) = $self->val_to_pixel($GX, $value->[3], $ds);
 
-            $self->marker($xp, $yp, $p->[1], $dsci );
-            $self->{_hotspots}->[$ds]->[$i] = ['rect', $self->marker_coordinates($xp, $yp)];
+        } else {
+            ($ox, $oy) = $self->val_to_pixel($i+1, $value->[0], $ds);
+            ($hx, $hy) = $self->val_to_pixel($i+1, $value->[1], $ds);
+            ($lx, $ly) = $self->val_to_pixel($i+1, $value->[2], $ds);
+            ($cx, $cy) = $self->val_to_pixel($i+1, $value->[3], $ds);
         }
+
+        $self->marker($ox,$oy, $cx,$cy, $lx,$ly, $hx,$hy, $dsci );
+        $self->{_hotspots}[$ds][$i] = ['rect', $self->marker_coordinates($ox,$oy, $cx,$cy, $lx,$ly, $hx,$hy)];
     }
 
     return $ds;
@@ -57,88 +64,19 @@ sub draw_data_set {
 # Draw a marker
 sub marker_coordinates {
     my $self = shift;
-    my ($xp, $yp) = @_;
+    my ($ox,$oy, $cx,$cy, $lx,$ly, $hx,$hy) = @_;
 
-    return (
-        $xp - $self->{marker_size},
-        $xp + $self->{marker_size},
-        $yp + $self->{marker_size},
-        $yp - $self->{marker_size},
-    );
+    return ( $ox-2, $cx+2, $hy, $ly );
 }
 
 sub marker {
     my $self = shift;
-    my ($xp, $yp, $mtype, $mclr) = @_;
+    my ($ox,$oy, $cx,$cy, $lx,$ly, $hx,$hy, $mclr) = @_;
     return unless defined $mclr;
 
-    my ($l, $r, $b, $t) = $self->marker_coordinates($xp, $yp);
-
-    MARKER: {
-
-        ($mtype == 1) && do 
-        { # Square, filled
-            $self->{graph}->filledRectangle($l, $t, $r, $b, $mclr);
-            last MARKER;
-        };
-        ($mtype == 2) && do 
-        { # Square, open
-            $self->{graph}->rectangle($l, $t, $r, $b, $mclr);
-            last MARKER;
-        };
-        ($mtype == 3) && do 
-        { # Cross, horizontal
-            $self->{graph}->line($l, $yp, $r, $yp, $mclr);
-            $self->{graph}->line($xp, $t, $xp, $b, $mclr);
-            last MARKER;
-        };
-        ($mtype == 4) && do 
-        { # Cross, diagonal
-            $self->{graph}->line($l, $b, $r, $t, $mclr);
-            $self->{graph}->line($l, $t, $r, $b, $mclr);
-            last MARKER;
-        };
-        ($mtype == 5) && do 
-        { # Diamond, filled
-            $self->{graph}->line($l, $yp, $xp, $t, $mclr);
-            $self->{graph}->line($xp, $t, $r, $yp, $mclr);
-            $self->{graph}->line($r, $yp, $xp, $b, $mclr);
-            $self->{graph}->line($xp, $b, $l, $yp, $mclr);
-            $self->{graph}->fillToBorder($xp, $yp, $mclr, $mclr);
-            last MARKER;
-        };
-        ($mtype == 6) && do 
-        { # Diamond, open
-            $self->{graph}->line($l, $yp, $xp, $t, $mclr);
-            $self->{graph}->line($xp, $t, $r, $yp, $mclr);
-            $self->{graph}->line($r, $yp, $xp, $b, $mclr);
-            $self->{graph}->line($xp, $b, $l, $yp, $mclr);
-            last MARKER;
-        };
-        ($mtype == 7) && do 
-        { # Circle, filled
-            $self->{graph}->arc($xp, $yp, 2 * $self->{marker_size},
-                         2 * $self->{marker_size}, 0, 360, $mclr);
-            $self->{graph}->fillToBorder($xp, $yp, $mclr, $mclr);
-            last MARKER;
-        };
-        ($mtype == 8) && do 
-        { # Circle, open
-            $self->{graph}->arc($xp, $yp, 2 * $self->{marker_size},
-                         2 * $self->{marker_size}, 0, 360, $mclr);
-            last MARKER;
-        };
-        ($mtype == 9) && do
-        { # Horizontal line
-            $self->{graph}->line($l, $yp, $r, $yp, $mclr);
-            last MARKER;
-        };
-        ($mtype == 10) && do
-        { # vertical line
-            $self->{graph}->line($xp, $t, $xp, $b, $mclr);
-            last MARKER;
-        };
-    }
+    $self->{graph}->line( ($ox,$oy) => ($ox-2,$oy), $mclr );
+    $self->{graph}->line( ($cx,$cy) => ($cx+2,$cy), $mclr );
+    $self->{graph}->line( ($lx,$ly) => ($hx,$hy),   $mclr );
 }
 
 "Just another true value";
