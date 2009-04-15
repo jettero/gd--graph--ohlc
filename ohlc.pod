@@ -23,6 +23,8 @@ nicely into an ohlc-mixed graph:
 
 =head1 EXAMPLE
 
+This example turns out like this: L<https://voltar.org/PerlModules/ohlc_example.png>.
+
     use strict;
     use warnings;
     use List::Util qw(min max);
