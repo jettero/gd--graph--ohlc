@@ -31,7 +31,7 @@ This example turns out like this: L<https://voltar.org/PerlModules/ohlc_example.
     use GD::Graph::ohlc;
     use GD::Graph::mixed;
 
-    my @msft = (   #  open      high         low        close
+    my @msft = (     #  open       high       low        close
         ["2007/12/18", "34.6400", "35.0000", "34.2100", "34.7400"],
         ["2007/12/19", "34.6900", "35.1400", "34.3800", "34.7900"],
         ["2007/12/20", "35.2900", "35.7900", "35.0800", "35.5200"],
@@ -43,40 +43,56 @@ This example turns out like this: L<https://voltar.org/PerlModules/ohlc_example.
         ["2007/12/31", "35.9000", "35.9900", "35.5200", "35.6000"],
         ["2008/01/02", "35.7900", "35.9600", "35.0000", "35.2200"],
         ["2008/01/03", "35.2200", "35.6500", "34.8600", "35.3700"],
+        ["2008/01/04", "35.1900", "35.2000", "34.0900", "34.3800"],
+        ["2008/01/07", "34.5500", "34.8000", "34.2500", "34.6100"],
+        ["2008/01/08", "34.7100", "34.7100", "33.4000", "33.4500"],
+        ["2008/01/09", "33.3600", "34.5400", "33.3500", "34.4400"],
+        ["2008/01/10", "34.3500", "34.5000", "33.7800", "34.3300"],
+        ["2008/01/11", "34.1400", "34.2400", "33.7200", "33.9100"],
+        ["2008/01/14", "34.4600", "34.5700", "34.0800", "34.3900"],
+        ["2008/01/15", "34.0300", "34.3800", "34.0000", "34.0000"],
+        ["2008/01/16", "33.4200", "33.6500", "32.5100", "33.2300"],
+        ["2008/01/17", "33.5400", "33.8000", "32.9700", "33.1100"],
+        ["2008/01/18", "33.1600", "34.0000", "32.9700", "33.0100"],
+        ["2008/01/22", "31.5400", "32.5300", "31.5000", "31.9600"],
+        ["2008/01/23", "31.4800", "32.0500", "31.0400", "31.9300"],
+        ["2008/01/24", "32.3500", "33.3600", "32.1200", "33.2500"],
+        ["2008/01/25", "34.9000", "35.0000", "32.8700", "32.9400"],
+        ["2008/01/28", "33.0200", "33.1000", "32.4200", "32.7200"],
+        ["2008/01/29", "32.8500", "32.8900", "32.3500", "32.6000"],
+        ["2008/01/30", "32.5600", "32.8000", "32.0500", "32.2000"],
+        ["2008/01/31", "31.9100", "32.7400", "31.7200", "32.6000"],
     );
-
-    my $data_ohlc = [
-        [ map {$_->[0]} @msft ],
-        [ map {[@$_[1 .. 4]]} @msft ],
-    ];
-
-    my $data_mixed = [ @$data_ohlc, [ map {$_->[4]} @msft ] ];
 
     my @all_points = map {@$_[1 .. 4]} @msft[1 .. $#msft];
     my $min_point  = min(@all_points);
     my $max_point  = max(@all_points);
 
-    for my $type (qw(mixed ohlc)) {
-        my $graph = eval "new GD::Graph::$type";
-           $graph->set( 
-                x_labels_vertical => 1,
-                x_label           => 'X Label',
-                y_label           => 'Y label',
-                title             => "test $type",
-                transparent       => 0,
-                dclrs             => [qw(blue black)],
-                types             => [qw(ohlc lines)],
-                y_min_value       => $min_point-0.2,
-                y_max_value       => $max_point+0.2,
-                y_number_format   => '%0.2f',
+    my $graph = GD::Graph::mixed->new(800, 400);
+       $graph->set( 
+            x_labels_vertical => 1,
+            x_label           => 'Trade Date',
+            y_label           => 'NASDAQ:MSFT',
+            title             => "Example OHLC",
+            transparent       => 0,
+            dclrs             => [qw(lgray blue)],
+            types             => [qw(lines ohlc)],
+            y_min_value       => $min_point-0.2,
+            y_max_value       => $max_point+0.2,
+            y_number_format   => '%0.2f',
 
-            ) or warn $graph->error;
+        ) or warn $graph->error;
 
-        my $gd = $graph->plot(eval "\$data_$type") or die $graph->error;
-        open my $dump, ">dump-$type.png" or die $!;
-        print $dump $gd->png;
-        close $dump;
-    }
+    my $data_ohlc = [
+        [ map {$_->[0]} @msft ],       # date
+        [ map {$_->[4]} @msft ],       # close
+        [ map {[@$_[1 .. 4]]} @msft ], # ohlc
+    ];
+
+    my $gd = $graph->plot($data_ohlc) or die $graph->error;
+    open my $dump, ">ohlc_example.png" or die $!;
+    print $dump $gd->png;
+    close $dump;
 
 =head1 AUTHOR
 

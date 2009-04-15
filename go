@@ -12,10 +12,10 @@ use File::Slurp qw(slurp);
 my $pod = slurp("ohlc.pod");
    $pod =~ s/^.*=head1 EXAMPLE\n//s;
    $pod =~ s/\n=head1.*//s;
+   $pod =~ s/^\S.*//mg;
 
 eval $pod;
-die $@ if $@;
+die "while evaluating EXAMPLE from pod: $@" if $@;
 
-system(qw(eog dump-mixed.png));
-system(qw(rm -v), glob("*.png"));
+systemx(qw(eog ohlc_example.png));
 exit 0;
