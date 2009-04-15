@@ -4,3 +4,5 @@ ohlc.pod
 go
 README
 ohlc_example.png
+Makefile.PL
+MANIFEST
