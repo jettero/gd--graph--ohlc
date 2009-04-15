@@ -1,27 +1,21 @@
 #==========================================================================
 #              Copyright (c) 2008 Paul Miller
-#              Copyright (c) 1995-1998 Martien Verbruggen
-#--------------------------------------------------------------------------
-#
-#   Name:
-#       GD::Graph::ohlc.pm  (an altered copy of ::points.pm)
-#
-# $Id$
 #==========================================================================
  
 package GD::Graph::ohlc;
 
 use strict;
+use GD::Graph::mixed; # NOTE: we pull this in so we can modify part of it.
 use GD::Graph::axestype;
 use GD::Graph::utils qw(:all);
 use GD::Graph::colour qw(:colours);
 
 use constant PI => 4 * atan2(1,1);
 
-use vars qw(@ISA $VERSION);
-($VERSION) = '$Revision 0.01$' =~ /\s([\d.]+)/;
-@ISA = qw(GD::Graph::axestype);
+our $VERSION = "0.0100";
+our @ISA = qw(GD::Graph::axestype);
 
+# draw_data_set {{{
 sub draw_data_set {
     my $self = shift;
     my $ds   = shift;
@@ -60,15 +54,16 @@ sub draw_data_set {
 
     return $ds;
 }
-
-# Draw a marker
+# }}}
+# ohlc_marker_coordinates {{{
 sub ohlc_marker_coordinates {
     my $self = shift;
     my ($ox,$oy, $cx,$cy, $lx,$ly, $hx,$hy) = @_;
 
     return ( $ox-2, $cx+2, $hy, $ly );
 }
-
+# }}}
+# ohlc_marker {{{
 sub ohlc_marker {
     my $self = shift;
     my ($ox,$oy, $cx,$cy, $lx,$ly, $hx,$hy, $mclr) = @_;
@@ -78,5 +73,6 @@ sub ohlc_marker {
     $self->{graph}->line( ($cx,$cy) => ($cx+2,$cy), $mclr );
     $self->{graph}->line( ($lx,$ly) => ($hx,$hy),   $mclr );
 }
+# }}}
 
-"Just another true value";
+"this file is true";
