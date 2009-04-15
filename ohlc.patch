@@ -1,0 +1,300 @@
+diff --git a/Graph.pm b/Graph.pm
+index 7cdb008..b7f6d88 100644
+--- a/Graph.pm
++++ b/Graph.pm
+@@ -581,6 +581,13 @@ Create an chart, displaying the data as points.
+ 
+ Combination of lines and points.
+ 
++=item C<GD::Graph::ohlc>
++
++Create an chart, displaying the open, high, low, and close -- normally for
++stock data.  The data points for ohlc charts are completely differnet from all
++the other graph types, they must be four touples, [$o,$h,$l,$c], instead of
++single scalar values.  See the end of the USAGE section for an example.
++
+ =item C<GD::Graph::area>
+ 
+ Create a graph, representing the data as areas under a line.
+@@ -703,6 +710,17 @@ decide that you mean a method name there)
+ See under L<"SEE ALSO"> for references to other documentation,
+ especially the FAQ.
+ 
++=head2 ohlc data
++
++The data points for ohlc and ohlc-mixed graphs have to be four touples.
++This would feed nicely into an ohlc-mixed graph:
++
++    @data = (
++        ['1st', '2nd', '3rd'],
++        [ 1, 2, 3 ],
++        [ [1,2,3,4], [1,2,3,4], [1,2,3,4] ],
++    );
++
+ =head1 METHODS
+ 
+ =head2 Methods for all graphs
+diff --git a/Graph/mixed.pm b/Graph/mixed.pm
+index 55494cd..ccceb27 100644
+--- a/Graph/mixed.pm
++++ b/Graph/mixed.pm
+@@ -21,6 +21,7 @@ use GD::Graph::points;
+ use GD::Graph::linespoints;
+ use GD::Graph::bars;
+ use GD::Graph::area;
++use GD::Graph::ohlc;
+ use Carp;
+  
+ # Even though multiple inheritance is not really a good idea, I will
+@@ -33,6 +34,7 @@ use Carp;
+     GD::Graph::bars
+     GD::Graph::lines 
+     GD::Graph::points 
++    GD::Graph::ohlc 
+ );
+ 
+ sub initialise
+diff --git a/Graph/ohlc.pm b/Graph/ohlc.pm
+new file mode 100644
+index 0000000..25e8794
+--- /dev/null
++++ b/Graph/ohlc.pm
+@@ -0,0 +1,82 @@
++#==========================================================================
++#              Copyright (c) 2008 Paul Miller
++#              Copyright (c) 1995-1998 Martien Verbruggen
++#--------------------------------------------------------------------------
++#
++#   Name:
++#       GD::Graph::ohlc.pm  (an altered copy of ::points.pm)
++#
++# $Id$
++#==========================================================================
++ 
++package GD::Graph::ohlc;
++
++use strict;
++use GD::Graph::axestype;
++use GD::Graph::utils qw(:all);
++use GD::Graph::colour qw(:colours);
++
++use constant PI => 4 * atan2(1,1);
++
++use vars qw(@ISA $VERSION);
++($VERSION) = '$Revision 0.01$' =~ /\s([\d.]+)/;
++@ISA = qw(GD::Graph::axestype);
++
++sub draw_data_set {
++    my $self = shift;
++    my $ds   = shift;
++
++    my @values = $self->{_data}->y_values($ds) or
++        return $self->_set_error("Impossible illegal data set: $ds", $self->{_data}->error);
++
++    # Pick a colour
++    my $dsci = $self->set_clr($self->pick_data_clr($ds));
++
++    my $GX;
++    my ($ox,$oy, $cx,$cy, $lx,$ly, $hx,$hy); # NOTE: all the x's are the same...
++    for (my $i = 0; $i < @values; $i++) {
++        my $value = $values[$i];
++        next unless ref($value) eq "ARRAY" and @$value==4;
++        my ($open, $high, $low, $close) = @$value;
++
++        if (defined($self->{x_min_value}) && defined($self->{x_max_value})) {
++            $GX = $self->{_data}->get_x($i);
++
++            ($ox, $oy) = $self->val_to_pixel($GX, $value->[0], $ds);
++            ($hx, $hy) = $self->val_to_pixel($GX, $value->[1], $ds);
++            ($lx, $ly) = $self->val_to_pixel($GX, $value->[2], $ds);
++            ($cx, $cy) = $self->val_to_pixel($GX, $value->[3], $ds);
++
++        } else {
++            ($ox, $oy) = $self->val_to_pixel($i+1, $value->[0], $ds);
++            ($hx, $hy) = $self->val_to_pixel($i+1, $value->[1], $ds);
++            ($lx, $ly) = $self->val_to_pixel($i+1, $value->[2], $ds);
++            ($cx, $cy) = $self->val_to_pixel($i+1, $value->[3], $ds);
++        }
++
++        $self->ohlc_marker($ox,$oy, $cx,$cy, $lx,$ly, $hx,$hy, $dsci );
++        $self->{_hotspots}[$ds][$i] = ['rect', $self->ohlc_marker_coordinates($ox,$oy, $cx,$cy, $lx,$ly, $hx,$hy)];
++    }
++
++    return $ds;
++}
++
++# Draw a marker
++sub ohlc_marker_coordinates {
++    my $self = shift;
++    my ($ox,$oy, $cx,$cy, $lx,$ly, $hx,$hy) = @_;
++
++    return ( $ox-2, $cx+2, $hy, $ly );
++}
++
++sub ohlc_marker {
++    my $self = shift;
++    my ($ox,$oy, $cx,$cy, $lx,$ly, $hx,$hy, $mclr) = @_;
++    return unless defined $mclr;
++
++    $self->{graph}->line( ($ox,$oy) => ($ox-2,$oy), $mclr );
++    $self->{graph}->line( ($cx,$cy) => ($cx+2,$cy), $mclr );
++    $self->{graph}->line( ($lx,$ly) => ($hx,$hy),   $mclr );
++}
++
++"Just another true value";
+diff --git a/samples/Makefile b/samples/Makefile
+index 1e73fb4..1774865 100644
+--- a/samples/Makefile
++++ b/samples/Makefile
+@@ -34,7 +34,8 @@ SAMPLES :=  \
+     sample57 \
+     sample61 sample62 sample63 sample64  \
+     sample71 \
+-    sample91 sample92 sample93 sample94 sample95 sample95-h
++    sample91 sample92 sample93 sample94 sample95 sample95-h \
++    sample97 sample97-m
+ 
+ IMAGES := $(SAMPLES:%=%.$(EXT))
+ 
+diff --git a/samples/sample97-m.pl b/samples/sample97-m.pl
+new file mode 100644
+index 0000000..a7c0808
+--- /dev/null
++++ b/samples/sample97-m.pl
+@@ -0,0 +1,67 @@
++#!/usr/bin/perl -Iblib/lib
++
++use strict;
++use GD::Graph::mixed;
++
++my @msft = (   #  open      high         low        close
++  ["2007/12/18", "34.6400", "35.0000", "34.2100", "34.7400"],
++  ["2007/12/19", "34.6900", "35.1400", "34.3800", "34.7900"],
++  ["2007/12/20", "35.2900", "35.7900", "35.0800", "35.5200"],
++  ["2007/12/21", "35.9000", "36.0600", "35.7500", "36.0600"],
++  ["2007/12/24", "36.1300", "36.7200", "36.0500", "36.5800"],
++  ["2007/12/26", "36.4100", "36.6400", "36.2600", "36.6100"],
++  ["2007/12/27", "36.3500", "36.5500", "35.9400", "35.9700"],
++  ["2007/12/28", "36.1000", "36.2300", "35.6700", "36.1200"],
++  ["2007/12/31", "35.9000", "35.9900", "35.5200", "35.6000"],
++  ["2008/01/02", "35.7900", "35.9600", "35.0000", "35.2200"],
++  ["2008/01/03", "35.2200", "35.6500", "34.8600", "35.3700"],
++);
++
++my $data_ohlc = [
++    [ map {$_->[0]} @msft ],
++    [ map {[@$_[1 .. 4]]} @msft ],
++];
++
++my $data_mixed = [ @$data_ohlc, [ map {$_->[4]} @msft ] ];
++
++my @all_points = map {@$_[1 .. 4]} @msft[1 .. $#msft];
++my $min_point  = min(@all_points);
++my $max_point  = max(@all_points);
++
++my $graph = new GD::Graph::mixed; print STDERR "Processing sample97 (mixed)\n";
++   $graph->set( 
++        x_labels_vertical => 1,
++        x_label           => 'X Label',
++        y_label           => 'Y label',
++        title             => "test ohlc mixed",
++        transparent       => 0,
++        dclrs             => [qw(blue black)],
++        types             => [qw(ohlc lines)],
++        y_min_value       => $min_point-0.2,
++        y_max_value       => $max_point+0.2,
++        y_number_format   => '%0.2f',
++
++    ) or warn $graph->error;
++
++my $gd = $graph->plot($data_mixed) or die $graph->error;
++open my $dump, ">sample97-m.gif" or die $!;
++print $dump $gd->gif;
++close $dump;
++
++sub min {
++    my $min = shift;
++    for(@_) {
++        $min = $_ if $_<$min;
++    }
++
++    $min;
++}
++
++sub max {
++    my $max = shift;
++    for(@_) {
++        $max = $_ if $_>$max;
++    }
++
++    $max;
++}
+diff --git a/samples/sample97.pl b/samples/sample97.pl
+new file mode 100644
+index 0000000..608a4d2
+--- /dev/null
++++ b/samples/sample97.pl
+@@ -0,0 +1,63 @@
++#!/usr/bin/perl -Iblib/lib
++
++use strict;
++use GD::Graph::ohlc;
++
++my @msft = (   #  open      high         low        close
++  ["2007/12/18", "34.6400", "35.0000", "34.2100", "34.7400"],
++  ["2007/12/19", "34.6900", "35.1400", "34.3800", "34.7900"],
++  ["2007/12/20", "35.2900", "35.7900", "35.0800", "35.5200"],
++  ["2007/12/21", "35.9000", "36.0600", "35.7500", "36.0600"],
++  ["2007/12/24", "36.1300", "36.7200", "36.0500", "36.5800"],
++  ["2007/12/26", "36.4100", "36.6400", "36.2600", "36.6100"],
++  ["2007/12/27", "36.3500", "36.5500", "35.9400", "35.9700"],
++  ["2007/12/28", "36.1000", "36.2300", "35.6700", "36.1200"],
++  ["2007/12/31", "35.9000", "35.9900", "35.5200", "35.6000"],
++  ["2008/01/02", "35.7900", "35.9600", "35.0000", "35.2200"],
++  ["2008/01/03", "35.2200", "35.6500", "34.8600", "35.3700"],
++);
++
++my $data_ohlc = [
++    [ map {$_->[0]} @msft ],
++    [ map {[@$_[1 .. 4]]} @msft ],
++];
++
++my @all_points = map {@$_[1 .. 4]} @msft[1 .. $#msft];
++my $min_point  = min(@all_points);
++my $max_point  = max(@all_points);
++
++my $graph = new GD::Graph::ohlc; print STDERR "Processing sample97\n";
++   $graph->set( 
++        x_labels_vertical => 1,
++        x_label           => 'X Label',
++        y_label           => 'Y label',
++        title             => "test ohlc",
++        transparent       => 0,
++        y_min_value       => $min_point-0.2,
++        y_max_value       => $max_point+0.2,
++        y_number_format   => '%0.2f',
++
++    ) or warn $graph->error;
++
++my $gd = $graph->plot($data_ohlc) or die $graph->error;
++open my $dump, ">sample97.gif" or die $!;
++print $dump $gd->gif;
++close $dump;
++
++sub min {
++    my $min = shift;
++    for(@_) {
++        $min = $_ if $_<$min;
++    }
++
++    $min;
++}
++
++sub max {
++    my $max = shift;
++    for(@_) {
++        $max = $_ if $_>$max;
++    }
++
++    $max;
++}
