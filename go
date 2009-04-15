@@ -1,9 +1,11 @@
 #!/usr/bin/perl -Iblib/lib
 
+use IPC::System::Simple qw(systemx);
+
 BEGIN {
     my @mtime = map {(stat $_)[9]} qw(Makefile Makefile.PL);
-    system (qw(perl Makefile.PL)) if $mtime[0] != $mtime[1];
-    system (qw(make -f Makefile));
+    systemx(qw(perl Makefile.PL)) if $mtime[0] != $mtime[1];
+    systemx(qw(make -f Makefile));
 }
 
 use File::Slurp qw(slurp);
