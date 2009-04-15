@@ -1,0 +1,96 @@
+=head1 NAME
+
+GD::Graph::ohlcv - A new graph type for GD::Graph
+
+=head1 SYNOPSIS
+
+Create an chart, displaying the open, high, low, and close -- normally for
+stock data.  The data points for ohlc charts are completely differnet from all
+the other graph types, they must be four touples, C<[$o,$h,$l,$c]>, instead of
+single scalar values.  See the L<EXAMPLE> section for example usage.
+
+=head1 ohlc data
+
+The data points for ohlc and ohlc-mixed graphs must be four touples -- instead
+of the single scalar number the other L<GD::Graph>s take.  This would feed
+nicely into an ohlc-mixed graph:
+
+    @data = (
+        ['1st', '2nd', '3rd'],
+        [ 1, 2, 3 ],
+        [ [1,2,3,4], [1,2,3,4], [1,2,3,4] ],
+    );
+
+=head1 EXAMPLE
+
+    use strict;
+    use warnings;
+    use List::Util qw(min max);
+    use GD::Graph::ohlc;
+    use GD::Graph::mixed;
+
+    my @msft = (   #  open      high         low        close
+        ["2007/12/18", "34.6400", "35.0000", "34.2100", "34.7400"],
+        ["2007/12/19", "34.6900", "35.1400", "34.3800", "34.7900"],
+        ["2007/12/20", "35.2900", "35.7900", "35.0800", "35.5200"],
+        ["2007/12/21", "35.9000", "36.0600", "35.7500", "36.0600"],
+        ["2007/12/24", "36.1300", "36.7200", "36.0500", "36.5800"],
+        ["2007/12/26", "36.4100", "36.6400", "36.2600", "36.6100"],
+        ["2007/12/27", "36.3500", "36.5500", "35.9400", "35.9700"],
+        ["2007/12/28", "36.1000", "36.2300", "35.6700", "36.1200"],
+        ["2007/12/31", "35.9000", "35.9900", "35.5200", "35.6000"],
+        ["2008/01/02", "35.7900", "35.9600", "35.0000", "35.2200"],
+        ["2008/01/03", "35.2200", "35.6500", "34.8600", "35.3700"],
+    );
+
+    my $data_ohlc = [
+        [ map {$_->[0]} @msft ],
+        [ map {[@$_[1 .. 4]]} @msft ],
+    ];
+
+    my $data_mixed = [ @$data_ohlc, [ map {$_->[4]} @msft ] ];
+
+    my @all_points = map {@$_[1 .. 4]} @msft[1 .. $#msft];
+    my $min_point  = min(@all_points);
+    my $max_point  = max(@all_points);
+
+    for my $type (qw(mixed ohlc)) {
+        my $graph = eval "new GD::Graph::$type";
+           $graph->set( 
+                x_labels_vertical => 1,
+                x_label           => 'X Label',
+                y_label           => 'Y label',
+                title             => "test $type",
+                transparent       => 0,
+                dclrs             => [qw(blue black)],
+                types             => [qw(ohlc lines)],
+                y_min_value       => $min_point-0.2,
+                y_max_value       => $max_point+0.2,
+                y_number_format   => '%0.2f',
+
+            ) or warn $graph->error;
+
+        my $gd = $graph->plot(eval "\$data_$type") or die $graph->error;
+        open my $dump, ">dump-$type.png" or die $!;
+        print $dump $gd->png;
+        close $dump;
+    }
+
+=head1 AUTHOR
+
+Paul Miller C<< <jettero@cpan.org> >>
+
+I am using this software in my own projects...  If you find bugs, please
+please please let me know. Actually, let me know if you find it handy at
+all.  Half the fun of releasing this stuff is knowing that people use it.
+
+If you see anything wrong with the callbacks, the docs, or anything:  Definitely
+let me know!  rt.cpan, irc, email, whatever.  Just let me know.
+
+=head1 COPYRIGHT
+
+Copyright (c) 2009 Paul Miller
+
+=head1 SEE ALSO
+
+perl(1), L<GD::Graph>
