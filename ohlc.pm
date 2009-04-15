@@ -15,6 +15,8 @@ use constant PI => 4 * atan2(1,1);
 our $VERSION = "0.0100";
 our @ISA = qw(GD::Graph::axestype);
 
+push @GD::Graph::mixed::ISA, __PACKAGE__;
+
 # draw_data_set {{{
 sub draw_data_set {
     my $self = shift;
