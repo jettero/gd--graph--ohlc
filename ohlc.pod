@@ -1,6 +1,6 @@
 =head1 NAME
 
-GD::Graph::ohlcv - A new graph type for GD::Graph
+GD::Graph::ohlc - A new graph type for GD::Graph
 
 =head1 SYNOPSIS
 
