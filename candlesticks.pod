@@ -109,4 +109,6 @@ Copyright (c) 2009 Paul Miller
 
 =head1 SEE ALSO
 
-perl(1), L<GD::Graph>, L<GD::Graph::candlesticks>
+perl(1), L<GD::Graph>, L<GD::Graph::ohlc>,
+L<candlesticks@wikipedia|http://en.wikipedia.org/wiki/Candlestick_chart>,
+L<error bars|http://en.wikipedia.org/wiki/Error_bars>
