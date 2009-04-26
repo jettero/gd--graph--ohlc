@@ -22,8 +22,10 @@ push @GD::Graph::mixed::ISA, __PACKAGE__;
 # initialise {{{
 sub initialise {
     my $self = shift;
-       $self->SUPER::initialise;
-       $self->set(correct_width => 1);
+
+    $self->SUPER::initialise;
+    $self->set(correct_width => 1);
+    $self->set(candle_stick_width => 5);
 }
 # }}}
 
@@ -81,9 +83,10 @@ sub candlesticks_marker {
     my ($ox,$oy, $cx,$cy, $lx,$ly, $hx,$hy, $mclr) = @_;
     return unless defined $mclr;
 
-    $self->{graph}->line( ($ox,$oy) => ($ox-2,$oy), $mclr );
-    $self->{graph}->line( ($cx,$cy) => ($cx+2,$cy), $mclr );
-    $self->{graph}->line( ($lx,$ly) => ($hx,$hy),   $mclr );
+    $self->{graph}->line( ($lx,$ly) => ($hx,$hy), $mclr );
+
+    my $mode = $cy>$oy ? "rectangle" : "filledRectangle";
+    $self->{graph}->$mode( ($cx-2,$cy) => ($cx+2,$cy), $mclr );
 }
 # }}}
 
