@@ -1,6 +1,7 @@
 candlesticks.pm
 Changes
-test_pod_example
+test_ohlc_pod_example
+test_candlesticks_pod_example
 Makefile.PL
 MANIFEST
 ohlc_example.png
