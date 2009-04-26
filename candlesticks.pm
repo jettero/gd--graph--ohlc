@@ -15,30 +15,33 @@ use constant PI => 4 * atan2(1,1);
 our $VERSION = "0.9402";
 our @ISA = qw(GD::Graph::axestype);
 
+our %DEFAULT = (
+    correct_width => 1,
+    candle_stick_width => 7,
+);
+
 push @GD::Graph::mixed::ISA, __PACKAGE__;
 
 # working off gdgraph/Graph/bars.pm (in addition to ohlc.pm)
 
-# initialise {{{
-sub initialise {
-    my $self = shift;
+# _has_default {{{
+sub _has_default {
+    my $this = shift;
 
-    $self->SUPER::initialise;
-    $self->set(correct_width => 1);
-    $self->set(candle_stick_width => 5);
+    return $DEFAULT{$_[0]} if exists $DEFAULT{$_[0]};
+    $this->SUPER::_has_default(@_);
 }
 # }}}
-
 # draw_data_set {{{
 sub draw_data_set {
-    my $self = shift;
+    my $this = shift;
     my $ds   = shift;
 
-    my @values = $self->{_data}->y_values($ds) or
-        return $self->_set_error("Impossible illegal data set: $ds", $self->{_data}->error);
+    my @values = $this->{_data}->y_values($ds) or
+        return $this->_set_error("Impossible illegal data set: $ds", $this->{_data}->error);
 
     # Pick a colour
-    my $dsci = $self->set_clr($self->pick_data_clr($ds));
+    my $dsci = $this->set_clr($this->pick_data_clr($ds));
 
     my $GX;
     my ($ox,$oy, $cx,$cy, $lx,$ly, $hx,$hy); # NOTE: all the x's are the same...
@@ -47,46 +50,61 @@ sub draw_data_set {
         next unless ref($value) eq "ARRAY" and @$value==4;
         my ($open, $high, $low, $close) = @$value;
 
-        if (defined($self->{x_min_value}) && defined($self->{x_max_value})) {
-            $GX = $self->{_data}->get_x($i);
+        if (defined($this->{x_min_value}) && defined($this->{x_max_value})) {
+            $GX = $this->{_data}->get_x($i);
 
-            ($ox, $oy) = $self->val_to_pixel($GX, $value->[0], $ds);
-            ($hx, $hy) = $self->val_to_pixel($GX, $value->[1], $ds);
-            ($lx, $ly) = $self->val_to_pixel($GX, $value->[2], $ds);
-            ($cx, $cy) = $self->val_to_pixel($GX, $value->[3], $ds);
+            ($ox, $oy) = $this->val_to_pixel($GX, $value->[0], $ds);
+            ($hx, $hy) = $this->val_to_pixel($GX, $value->[1], $ds);
+            ($lx, $ly) = $this->val_to_pixel($GX, $value->[2], $ds);
+            ($cx, $cy) = $this->val_to_pixel($GX, $value->[3], $ds);
 
         } else {
-            ($ox, $oy) = $self->val_to_pixel($i+1, $value->[0], $ds);
-            ($hx, $hy) = $self->val_to_pixel($i+1, $value->[1], $ds);
-            ($lx, $ly) = $self->val_to_pixel($i+1, $value->[2], $ds);
-            ($cx, $cy) = $self->val_to_pixel($i+1, $value->[3], $ds);
+            ($ox, $oy) = $this->val_to_pixel($i+1, $value->[0], $ds);
+            ($hx, $hy) = $this->val_to_pixel($i+1, $value->[1], $ds);
+            ($lx, $ly) = $this->val_to_pixel($i+1, $value->[2], $ds);
+            ($cx, $cy) = $this->val_to_pixel($i+1, $value->[3], $ds);
         }
 
-        $self->candlesticks_marker($ox,$oy, $cx,$cy, $lx,$ly, $hx,$hy, $dsci );
-        $self->{_hotspots}[$ds][$i] = ['rect', $self->candlesticks_marker_coordinates($ox,$oy, $cx,$cy, $lx,$ly, $hx,$hy)];
+        $this->candlesticks_marker($ox,$oy, $cx,$cy, $lx,$ly, $hx,$hy, $dsci );
+        $this->{_hotspots}[$ds][$i] = ['rect', $this->candlesticks_marker_coordinates($ox,$oy, $cx,$cy, $lx,$ly, $hx,$hy)];
     }
 
     return $ds;
 }
 # }}}
+# half_width {{{
+sub half_width {
+    my $this = shift;
+
+    return int( $this->{candle_stick_width} / 2 ) if exists $this->{candle_stick_width};
+    return 3;
+}
+# }}}
 # candlesticks_marker_coordinates {{{
 sub candlesticks_marker_coordinates {
-    my $self = shift;
+    my $this = shift;
     my ($ox,$oy, $cx,$cy, $lx,$ly, $hx,$hy) = @_;
 
-    return ( $ox-2, $cx+2, $hy, $ly );
+    my $h = $this->half_width;
+    return ( $ox - $h, $cx + $h, $hy, $ly );
 }
 # }}}
 # candlesticks_marker {{{
 sub candlesticks_marker {
-    my $self = shift;
+    my $this = shift;
     my ($ox,$oy, $cx,$cy, $lx,$ly, $hx,$hy, $mclr) = @_;
     return unless defined $mclr;
 
-    $self->{graph}->line( ($lx,$ly) => ($hx,$hy), $mclr );
+    $this->{graph}->line( ($lx,$ly) => ($hx,$hy), $mclr );
 
-    my $mode = $cy>$oy ? "rectangle" : "filledRectangle";
-    $self->{graph}->$mode( ($cx-2,$cy) => ($cx+2,$cy), $mclr );
+    my $h = $this->half_width;
+    if( $cy>$oy ) {
+        $this->{graph}->filledRectangle( ($cx - $h, $cy) => ($ox + $h, $oy), $this->{bgci} );
+        $this->{graph}->rectangle(       ($cx - $h, $cy) => ($ox + $h, $oy), $mclr );
+
+    } else {
+        $this->{graph}->filledRectangle( ($cx - $h, $cy) => ($ox + $h, $oy), $mclr );
+    }
 }
 # }}}
 
