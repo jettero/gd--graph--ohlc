@@ -1,9 +1,10 @@
+candlesticks.pm
 Changes
-ohlc.pm
-ohlc.pod
 go
-README
-ohlc_example.png
 Makefile.PL
 MANIFEST
+ohlc_example.png
+ohlc.pm
+ohlc.pod
+README
 t/01_load.t
