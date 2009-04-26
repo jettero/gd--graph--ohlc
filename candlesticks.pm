@@ -17,7 +17,7 @@ our @ISA = qw(GD::Graph::axestype);
 
 our %DEFAULT = (
     correct_width => 1,
-    candle_stick_width => 7,
+    candlestick_width => 7,
 );
 
 push @GD::Graph::mixed::ISA, __PACKAGE__;
@@ -76,7 +76,7 @@ sub draw_data_set {
 sub half_width {
     my $this = shift;
 
-    return int( $this->{candle_stick_width} / 2 ) if exists $this->{candle_stick_width};
+    return int( $this->{candlestick_width} / 2 ) if exists $this->{candlestick_width};
     return 3;
 }
 # }}}
