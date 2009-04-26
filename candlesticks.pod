@@ -22,6 +22,12 @@ This would feed nicely into an candlesticks-mixed graph:
         [ [1,2,3,4], [1,2,3,4], [1,2,3,4] ],
     );
 
+=head1 NEW OPTION
+
+This module adds a new option: C<candlestick_width> (default: 7).  It is the
+overall width of the candlestick.  Candlesticks shouldn't touch the way
+bar-graphs would, so this seemed to require a new option.
+
 =head1 EXAMPLE
 
 This example turns out like this: L<https://voltar.org/PerlModules/candlesticks_example.png>.
@@ -75,6 +81,7 @@ This example turns out like this: L<https://voltar.org/PerlModules/candlesticks_
             y_label           => 'NASDAQ:MSFT',
             title             => "Example OHLC",
             transparent       => 0,
+            candlestick_width => 7,
             dclrs             => [qw(blue)],
             y_min_value       => $min_point-0.2,
             y_max_value       => $max_point+0.2,
