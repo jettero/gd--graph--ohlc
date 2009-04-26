@@ -1,0 +1,8 @@
+^patch$
+^.git
+^MANIFEST.SKIP$
+^Distro$
+^Makefile
+.pm-desc.html
+^gdgraph/
+mixed_candle.pl
