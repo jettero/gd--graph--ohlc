@@ -17,6 +17,16 @@ our @ISA = qw(GD::Graph::axestype);
 
 push @GD::Graph::mixed::ISA, __PACKAGE__;
 
+# working off gdgraph/Graph/bars.pm (in addition to ohlc.pm)
+
+# initialise {{{
+sub initialise {
+    my $self = shift;
+       $self->SUPER::initialise;
+       $self->set(correct_width => 1);
+}
+# }}}
+
 # draw_data_set {{{
 sub draw_data_set {
     my $self = shift;
