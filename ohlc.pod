@@ -111,4 +111,4 @@ Copyright (c) 2009 Paul Miller
 
 =head1 SEE ALSO
 
-perl(1), L<GD::Graph>
+perl(1), L<GD::Graph>, L<GD::Graph::candlesticks>
