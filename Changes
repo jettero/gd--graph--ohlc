@@ -1,6 +1,7 @@
-0.9600: Sun Apr 26 13:15:33 EDT 2009
+0.9600: Sun Apr 26 17:56:40 EDT 2009
    - started adding candlesticks
    - added the pod and the pod-example test script
+   - got candlesticks working -- have not yet tested mixed graphs with them
 
 0.9402: Wed Apr 15 22:05:18 EDT 2009
    - misnamed in the name line of the pod.  Wow.
