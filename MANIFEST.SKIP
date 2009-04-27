@@ -3,6 +3,6 @@
 ^MANIFEST.SKIP$
 ^Distro$
 ^Makefile
-.pm-desc.html
+^.pm-
 ^gdgraph/
-mixed_candle.pl
+^mixed_candle.pl$
