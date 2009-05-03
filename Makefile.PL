@@ -15,11 +15,11 @@ WriteMakefile(
             META_MERGE => {
                 keywords => [qw(graph open close)],
                 resources=> {
-                    repository => 'http://github.com/jettero/gd--graph--ohlc/tree',
+                    repository => 'http://github.com/jettero/gd--graph--ohlc/',
                 },
             },
 
-        LICENSE	=> 'lgpl2',
+        LICENSE	=> 'LGPL',
     ) : ()),
 
     # clean => { FILES => 'blargorious' },
