@@ -112,4 +112,4 @@ Copyright (c) 2009 Paul Miller
 =head1 SEE ALSO
 
 perl(1), L<GD::Graph>, L<GD::Graph::candlesticks>,
-L<OHLC@wikipedia|http://en.wikipedia.org/wiki/OHLC>
+L<http://en.wikipedia.org/wiki/OHLC>
