@@ -1,5 +1,8 @@
 #!/usr/bin/perl -Iblib/lib
 
+use strict;
+use warnings;
+
 use IPC::System::Simple qw(systemx);
 
 BEGIN {
@@ -8,8 +11,6 @@ BEGIN {
     systemx(qw(make -f Makefile));
 }
 
-use strict;
-use warnings;
 use List::Util qw(min max);
 use GD::Graph::candlesticks;
 use GD::Graph::mixed;
@@ -73,6 +74,6 @@ my $data_candlesticks = [
 ];
 
 my $gd = $graph->plot($data_candlesticks) or die $graph->error;
-open my $dump, ">candlemixed_example.png" or die $!;
+open my $dump, ">", "candlemixed_example.png" or die $!;
 print $dump $gd->png;
 close $dump;
