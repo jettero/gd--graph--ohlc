@@ -5,6 +5,8 @@
 package GD::Graph::ohlc;
 
 use strict;
+use warnings;
+
 use GD::Graph::mixed; # NOTE: we pull this in so we can modify part of it.
 use GD::Graph::axestype;
 use GD::Graph::utils qw(:all);
@@ -74,7 +76,9 @@ sub ohlc_marker {
     $self->{graph}->line( ($ox,$oy) => ($ox-2,$oy), $mclr );
     $self->{graph}->line( ($cx,$cy) => ($cx+2,$cy), $mclr );
     $self->{graph}->line( ($lx,$ly) => ($hx,$hy),   $mclr );
+    
+    return;
 }
 # }}}
 
-"this file is true";
+1;

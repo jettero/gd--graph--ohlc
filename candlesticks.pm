@@ -5,6 +5,8 @@
 package GD::Graph::candlesticks;
 
 use strict;
+use warnings;
+
 use GD::Graph::mixed; # NOTE: we pull this in so we can modify part of it.
 use GD::Graph::axestype;
 use GD::Graph::utils qw(:all);
@@ -29,7 +31,7 @@ sub _has_default {
     my $this = shift;
 
     return $DEFAULT{$_[0]} if exists $DEFAULT{$_[0]};
-    $this->SUPER::_has_default(@_);
+    return $this->SUPER::_has_default(@_);
 }
 # }}}
 # draw_data_set {{{
@@ -105,7 +107,9 @@ sub candlesticks_marker {
     } else {
         $this->{graph}->filledRectangle( ($cx - $h, $cy) => ($ox + $h, $oy), $mclr );
     }
+
+    return;
 }
 # }}}
 
-"this file is true";
+1;
