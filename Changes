@@ -1,3 +1,7 @@
+0.9600: Wed Jul 08 2009
+   - Doc bugs (very indirectly) found by Hans Dieter Pearcey
+   - added critic.t and fixed many things
+
 0.9600: Sun Apr 26 17:56:40 EDT 2009
    - started adding candlesticks
    - added the pod and the pod-example test script
