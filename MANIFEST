@@ -12,6 +12,5 @@ ohlc_example.png
 t/01_load.t
 t/critic.t
 t/pod.t
-t/pod_coverage.t
 test_candlesticks_pod_example
 test_ohlc_pod_example
