@@ -64,7 +64,7 @@ This example turns out like this: L<https://voltar.org/PerlModules/ohlc_example.
         ["2008/01/31", "31.9100", "32.7400", "31.7200", "32.6000"],
     );
 
-    my @all_points = map {@$_[1 .. 4]} @msft[1 .. $#msft];
+    my @all_points = map {@$_[1 .. 4]} @msft;
     my $min_point  = min(@all_points);
     my $max_point  = max(@all_points);
 
