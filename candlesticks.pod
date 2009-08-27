@@ -32,6 +32,9 @@ bar-graphs would, so this seemed to require a new option.
 
 This example turns out like this: L<https://voltar.org/PerlModules/candlesticks_example.png>.
 
+NOTE: You do can to use L<GD::Graph::mixed> here -- see
+L<GD::Graph::ohlc> for an example that doesn't use mixed.
+
     use strict;
     use warnings;
     use List::Util qw(min max);
