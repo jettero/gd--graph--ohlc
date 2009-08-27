@@ -14,7 +14,7 @@ use GD::Graph::colour qw(:colours);
 
 use constant PI => 4 * atan2(1,1);
 
-our $VERSION = "0.9601";
+our $VERSION = "0.9602";
 our @ISA = qw(GD::Graph::axestype);
 
 our %DEFAULT = (
