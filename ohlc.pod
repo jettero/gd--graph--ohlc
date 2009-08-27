@@ -25,7 +25,7 @@ nicely into an ohlc-mixed graph:
 
 This example turns out like this: L<https://voltar.org/PerlModules/ohlc_example.png>.
 
-NOTE: You do not need to use L<GD::Graph::mixed> here -- see
+NOTE: You do not need to use L<GD::Graph::mixed> here.  See
 L<GD::Graph::candlesticks> for an example that doesn't use mixed.
 
     use strict;
