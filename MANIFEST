@@ -6,11 +6,12 @@ README
 candlesticks.pm
 candlesticks.pod
 candlesticks_example.png
+contrib/mixed_candle.pl
+contrib/test_candlesticks_pod_example
+contrib/test_ohlc_pod_example
 ohlc.pm
 ohlc.pod
 ohlc_example.png
 t/01_load.t
 t/critic.t
 t/pod.t
-test_candlesticks_pod_example
-test_ohlc_pod_example
