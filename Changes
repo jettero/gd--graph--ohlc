@@ -1,3 +1,7 @@
+0.9602: Fri Oct 09 2009
+   - candlesticks were upside down -- how did I not notice that?
+     Thanks Nilson.
+
 0.9602: Thu Aug 27 2009
    - Made a few pod changes (in addition to Ken's) and moved a
      few files around in the dist.
