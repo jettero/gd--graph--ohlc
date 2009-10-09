@@ -101,11 +101,11 @@ sub candlesticks_marker {
 
     my $h = $this->half_width;
     if( $cy>$oy ) {
-        $this->{graph}->filledRectangle( ($cx - $h, $cy) => ($ox + $h, $oy), $this->{bgci} );
-        $this->{graph}->rectangle(       ($cx - $h, $cy) => ($ox + $h, $oy), $mclr );
+        $this->{graph}->filledRectangle( ($cx - $h, $cy) => ($ox + $h, $oy), $mclr );
 
     } else {
-        $this->{graph}->filledRectangle( ($cx - $h, $cy) => ($ox + $h, $oy), $mclr );
+        $this->{graph}->filledRectangle( ($cx - $h, $cy) => ($ox + $h, $oy), $this->{bgci} );
+        $this->{graph}->rectangle(       ($cx - $h, $cy) => ($ox + $h, $oy), $mclr );
     }
 
     return;
