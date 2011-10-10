@@ -14,18 +14,32 @@ use GD::Graph::colour qw(:colours);
 
 use constant PI => 4 * atan2(1,1);
 
-our $VERSION = "0.9605";
+our $VERSION = "0.9606";
 our @ISA = qw(GD::Graph::axestype);
 
 our %DEFAULT = (
     correct_width => 1,
     candlestick_width => 7,
+    candlestick_spacing     => 0,
+    candlestickgroup_spacing=> 25,
 );
 
 push @GD::Graph::mixed::ISA, __PACKAGE__;
 
 # working off gdgraph/Graph/bars.pm (in addition to ohlc.pm)
 
+# initialise {{{
+sub initialise {
+    my $self = shift;
+
+    $self->SUPER::initialise();
+
+    while (my($key, $val) = each %DEFAULT) 
+        { $self->{$key} = $val }
+
+    return 1;
+}
+# }}}
 # _has_default {{{
 sub _has_default {
     my $this = shift;
@@ -65,6 +79,18 @@ sub draw_data_set {
             ($hx, $hy) = $this->val_to_pixel($i+1, $value->[1], $ds);
             ($lx, $ly) = $this->val_to_pixel($i+1, $value->[2], $ds);
             ($cx, $cy) = $this->val_to_pixel($i+1, $value->[3], $ds);
+        }
+
+        if (!$this->{overwrite}) {
+            my $candlestick_s = $this->{candlestick_spacing}/2;
+            my $window = $this->{x_step} - $this->{candlestickgroup_spacing};
+
+            foreach my $x ($ox, $hx, $lx, $cx) {
+                $x = $x
+                - $window/2
+                + ($ds - 1) * $window/$this->{_data}->num_sets
+                + $candlestick_s + 1;
+            }
         }
 
         $this->candlesticks_marker($ox,$oy, $cx,$cy, $lx,$ly, $hx,$hy, $dsci );
