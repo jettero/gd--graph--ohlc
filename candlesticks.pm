@@ -24,6 +24,9 @@ our %DEFAULT = (
     candlestickgroup_spacing=> 25,
 );
 
+our $ALT_POSITIVE_COLOR;
+our $ALT_NEGATIVE_COLOR;
+
 push @GD::Graph::mixed::ISA, __PACKAGE__;
 
 # working off gdgraph/Graph/bars.pm (in addition to ohlc.pm)
@@ -57,7 +60,8 @@ sub draw_data_set {
         return $this->_set_error("Impossible illegal data set: $ds", $this->{_data}->error);
 
     # Pick a colour
-    my $dsci = $this->set_clr($this->pick_data_clr($ds));
+    my $_dsci = $this->set_clr($this->pick_data_clr($ds));
+    my $dsci;
 
     my $GX;
     my ($ox,$oy, $cx,$cy, $lx,$ly, $hx,$hy); # NOTE: all the x's are the same...
@@ -65,6 +69,13 @@ sub draw_data_set {
         my $value = $values[$i];
         next unless ref($value) eq "ARRAY" and @$value==4;
         my ($open, $high, $low, $close) = @$value;
+
+        if( $open >= $close ) {
+            $dsci = eval {$ALT_POSITIVE_COLOR->{$_dsci}} || $ALT_POSITIVE_COLOR || $_dsci;
+
+        } else {
+            $dsci = eval {$ALT_NEGATIVE_COLOR->{$_dsci}} || $ALT_POSITIVE_COLOR || $_dsci;
+        }
 
         if (defined($this->{x_min_value}) && defined($this->{x_max_value})) {
             $GX = $this->{_data}->get_x($i);
@@ -136,6 +147,41 @@ sub candlesticks_marker {
 
     return;
 }
+# }}}
+
+# {{{ sub set_alt_positive_color
+sub set_alt_positive_color {
+    my $this = shift;
+    my $that = shift;
+
+    if( ref($that) ) {
+        for my $k (keys %$that) {
+            my $v = delete $that->{$k};
+            $that->{_rgb($k)} = _rgb($v);
+        }
+        return;
+    }
+
+    $ALT_POSITIVE_COLOR = _rgb(shift);
+}
+
+# }}}
+# {{{ sub set_alt_negative_color
+sub set_alt_negative_color {
+    my $this = shift;
+    my $that = shift;
+
+    if( ref($that) ) {
+        for my $k (keys %$that) {
+            my $v = delete $that->{$k};
+            $that->{_rgb($k)} = _rgb($v);
+        }
+        return;
+    }
+
+    $ALT_POSITIVE_COLOR = _rgb(shift);
+}
+
 # }}}
 
 1;
