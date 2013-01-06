@@ -1,3 +1,8 @@
+0.9607: Sun Jan 06 2013
+   - major bugs relating to the alternate color stuff that I
+     don't think anyone (including myself) ever used.  Stripped
+     it out.
+
 0.9606: Mon Oct 10 2011
    - contribs for candlestick overwrite mode, thanks Andrew
 
