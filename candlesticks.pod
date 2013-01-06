@@ -117,6 +117,8 @@ let me know!  rt.cpan, irc, email, whatever.  Just let me know.
 
 Nilson Santos Figueiredo Junior C<< <nilsonsfj@cpan.org> >>
 
+Zen Kurokawa C<< <zen.kurokawa@gmail.com> >>
+
 =over
 
 Noticed the candlesticks were upside down -- how did I miss that?
@@ -125,7 +127,7 @@ Noticed the candlesticks were upside down -- how did I miss that?
 
 =head1 COPYRIGHT
 
-Copyright (c) 2009 Paul Miller
+Copyright (c) 2013 Paul Miller
 
 =head1 SEE ALSO
 

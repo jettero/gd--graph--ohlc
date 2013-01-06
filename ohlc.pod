@@ -110,7 +110,7 @@ let me know!  rt.cpan, irc, email, whatever.  Just let me know.
 
 =head1 COPYRIGHT
 
-Copyright (c) 2009 Paul Miller
+Copyright (c) 2012 Paul Miller
 
 =head1 SEE ALSO
 

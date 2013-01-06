@@ -2,6 +2,11 @@
    - major bugs relating to the alternate color stuff that I
      don't think anyone (including myself) ever used.  Stripped
      it out.
+   - Zen Kurokawa (@gmail) points out major drawing failure when
+     the candlesticks when there are fewer data points than
+     needed to fill the graph.
+
+     https://rt.cpan.org/Ticket/Display.html?id=82524
 
 0.9606: Mon Oct 10 2011
    - contribs for candlestick overwrite mode, thanks Andrew
