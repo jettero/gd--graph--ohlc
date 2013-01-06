@@ -163,6 +163,8 @@ sub set_alt_positive_color {
     }
 
     $ALT_POSITIVE_COLOR = _rgb(shift);
+
+    return;
 }
 
 # }}}
@@ -180,6 +182,8 @@ sub set_alt_negative_color {
     }
 
     $ALT_POSITIVE_COLOR = _rgb(shift);
+
+    return;
 }
 
 # }}}
