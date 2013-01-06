@@ -14,6 +14,7 @@ my $pod = slurp("candlesticks.pod");
    $pod =~ s/\n=head1.*//s;
    $pod =~ s/^\S.*//mg;
 
+use lib 'blib/lib';
 eval $pod;
 write_file("/tmp/candlesticks.pl"=>$pod);
 die "while evaluating EXAMPLE from pod: $@" if $@;
