@@ -93,7 +93,7 @@ L<GD::Graph::candlesticks> for an example that doesn't use mixed.
     ];
 
     my $gd = $graph->plot($data_ohlc) or die $graph->error;
-    open my $dump, ">ohlc_example.png" or die $!;
+    open my $dump, ">", "/tmp/ohlc_example.png" or die $!;
     print $dump $gd->png;
     close $dump;
 
