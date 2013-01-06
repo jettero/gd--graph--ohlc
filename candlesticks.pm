@@ -81,17 +81,17 @@ sub draw_data_set {
             ($cx, $cy) = $this->val_to_pixel($i+1, $value->[3], $ds);
         }
 
-        if (!$this->{overwrite}) {
-            my $candlestick_s = $this->{candlestick_spacing}/2;
-            my $window = $this->{x_step} - $this->{candlestickgroup_spacing};
-
-            foreach my $x ($ox, $hx, $lx, $cx) {
-                $x = $x
-                - $window/2
-                + ($ds - 1) * $window/$this->{_data}->num_sets
-                + $candlestick_s + 1;
-            }
-        }
+     #  if (!$this->{overwrite}) {
+     #      my $candlestick_s = $this->{candlestick_spacing}/2;
+     #      my $window = $this->{x_step} - $this->{candlestickgroup_spacing};
+     #
+     #      foreach my $x ($ox, $hx, $lx, $cx) {
+     #          $x = $x
+     #          - $window/2
+     #          + ($ds - 1) * $window/$this->{_data}->num_sets
+     #          + $candlestick_s + 1;
+     #      }
+     #  }
 
         $this->candlesticks_marker($ox,$oy, $cx,$cy, $lx,$ly, $hx,$hy, $dsci );
         $this->{_hotspots}[$ds][$i] = ['rect', $this->candlesticks_marker_coordinates($ox,$oy, $cx,$cy, $lx,$ly, $hx,$hy)];
