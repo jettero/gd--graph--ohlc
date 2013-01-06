@@ -14,10 +14,12 @@ my $pod = slurp("candlesticks.pod");
    $pod =~ s/\n=head1.*//s;
    $pod =~ s/^\S.*//mg;
 
+$pod =~ s/^.*20[0-9][0-9].*#$//mg if "@ARGV" =~ m/--small/;
+
 use lib 'blib/lib';
 eval $pod;
 write_file("/tmp/candlesticks.pl"=>$pod);
 die "while evaluating EXAMPLE from pod: $@" if $@;
 
-systemx(qw(eog candlesticks_example.png));
+systemx(qw(eog /tmp/candlesticks_example.png));
 exit 0;

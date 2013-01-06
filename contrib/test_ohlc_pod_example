@@ -17,5 +17,5 @@ my $pod = slurp("ohlc.pod");
 eval $pod;
 die "while evaluating EXAMPLE from pod: $@" if $@;
 
-systemx(qw(eog ohlc_example.png));
+systemx(qw(eog /tmp/ohlc_example.png));
 exit 0;
