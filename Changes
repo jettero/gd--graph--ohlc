@@ -8,6 +8,9 @@
 
      https://rt.cpan.org/Ticket/Display.html?id=82524
 
+     my fix (temporary?) disables the {overwrite} functionality
+     introduced by andrew+github@afresh1.com
+
 0.9606: Mon Oct 10 2011
    - contribs for candlestick overwrite mode, thanks Andrew
 
