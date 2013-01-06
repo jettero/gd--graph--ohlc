@@ -1,7 +1,7 @@
 #==========================================================================
 #              Copyright (c) 2008 Paul Miller
 #==========================================================================
- 
+
 package GD::Graph::candlesticks;
 
 use strict;
@@ -37,7 +37,7 @@ sub initialise {
 
     $self->SUPER::initialise();
 
-    while (my($key, $val) = each %DEFAULT) 
+    while (my($key, $val) = each %DEFAULT)
         { $self->{$key} = $val }
 
     return 1;

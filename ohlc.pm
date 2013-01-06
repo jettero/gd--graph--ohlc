@@ -1,7 +1,7 @@
 #==========================================================================
 #              Copyright (c) 2008 Paul Miller
 #==========================================================================
- 
+
 package GD::Graph::ohlc;
 
 use strict;
@@ -76,7 +76,7 @@ sub ohlc_marker {
     $self->{graph}->line( ($ox,$oy) => ($ox-2,$oy), $mclr );
     $self->{graph}->line( ($cx,$cy) => ($cx+2,$cy), $mclr );
     $self->{graph}->line( ($lx,$ly) => ($hx,$hy),   $mclr );
-    
+
     return;
 }
 # }}}
