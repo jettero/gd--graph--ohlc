@@ -8,13 +8,14 @@ BEGIN {
     systemx(qw(make -f Makefile));
 }
 
-use File::Slurp qw(slurp);
+use File::Slurp qw(slurp write_file);
 my $pod = slurp("candlesticks.pod");
    $pod =~ s/^.*=head1 EXAMPLE\n//s;
    $pod =~ s/\n=head1.*//s;
    $pod =~ s/^\S.*//mg;
 
 eval $pod;
+write_file("/tmp/candlesticks.pl"=>$pod);
 die "while evaluating EXAMPLE from pod: $@" if $@;
 
 systemx(qw(eog candlesticks_example.png));
