@@ -6,3 +6,4 @@
 ^.pm-
 ^gdgraph/
 ^mixed_candle.pl$
+.modules
