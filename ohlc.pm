@@ -64,7 +64,8 @@ sub ohlc_marker_coordinates {
     my $self = shift;
     my ($ox,$oy, $cx,$cy, $lx,$ly, $hx,$hy) = @_;
 
-    return ( $ox-2, $cx+2, $hy, $ly );
+    my ($l,$t,$r,$b) = ( $ox-2, $hy, $ox+2, $ly );
+    return ($t <= $b) ? ( $l, $t, $r, $b ) : ( $l, $b, $r, $t );
 }
 # }}}
 # ohlc_marker {{{
