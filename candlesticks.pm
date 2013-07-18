@@ -114,7 +114,8 @@ sub candlesticks_marker_coordinates {
     my ($ox,$oy, $cx,$cy, $lx,$ly, $hx,$hy) = @_;
 
     my $h = $this->half_width;
-    return ( $ox - $h, $cx + $h, $hy, $ly );
+    my ($l,$t,$r,$b) = ($ox - $h, $hy, $ox + $h, $ly);
+    return ($t <= $b) ? ( $l, $t, $r, $b ) : ( $l, $b, $r, $t );
 }
 # }}}
 # candlesticks_marker {{{
