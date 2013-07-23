@@ -115,9 +115,9 @@ let me know!  rt.cpan, irc, email, whatever.  Just let me know.
 
 =head1 THANKS
 
-Nilson Santos Figueiredo Junior C<< <nilsonsfj@cpan.org> >>
+Nilson Santos Figueiredo Junior
 
-Zen Kurokawa C<< <zen.kurokawa@gmail.com> >>
+Zen Kurokawa
 
 =over
 
